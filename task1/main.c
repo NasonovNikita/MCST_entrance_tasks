@@ -165,6 +165,10 @@ int scan_arr(int** arr_ptr) {
         printf("Filling arr: count %d, capacity %d, elem %d\n", count, capacity, num);
 #endif
     }
+    if (count == 0) {
+        fprintf(stderr, "No numbers found in input\n");
+        return 1;
+    }
 
     if (count < capacity) {
         *arr_ptr = realloc(*arr_ptr, count * sizeof(int));
@@ -216,6 +220,5 @@ int main(const int argc, char *argv[]) {
 
     free(*arr_ptr);
     free(arr_ptr);
-
     return 0;
 }
