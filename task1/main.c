@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
     int elem_end;  // exclusive
@@ -21,8 +22,70 @@ struct sortBranch_t {
     sortBranch_t* right;
 };
 
-// TODO: implement
-void* merge_sort(void* data);
+int compare_int(const void* a, const void* b) {
+    return *(int*) a - *(int*) b;
+}
+
+void* merge_sort(void* branch) {
+    const sortBranch_t* root = (sortBranch_t*) branch;
+    const pthrData_t* data = root->data;
+
+    // Bottom sort
+    if (root->left == NULL) {
+        qsort(data->arr + data->elem_start,
+            data->elem_end - data->elem_start,
+            sizeof(int), compare_int);
+        return NULL;
+    }
+
+    const int left_size = root->left->data->elem_end - root->left->data->elem_start;
+    const int right_size = root->right->data->elem_end - root->right->data->elem_start;
+    const int elemStart = data->elem_start;
+
+    // Sort branches
+    pthread_t left_thread;
+    pthread_t right_thread;
+    pthread_create(&left_thread, NULL, merge_sort, root->left);
+    pthread_create(&right_thread, NULL, merge_sort, root->right);
+    pthread_join(left_thread, NULL);
+    pthread_join(right_thread, NULL);
+
+    // Merge branches
+    int* left_arr = malloc(left_size * sizeof(int));
+    int* right_arr = malloc(right_size * sizeof(int));
+    memcpy(left_arr, data->arr + elemStart, left_size * sizeof(int));
+    memcpy(right_arr, data->arr + elemStart + left_size, right_size * sizeof(int));
+
+    int i = 0;
+    int j = 0;
+    while (i < left_size && j < right_size) {
+        if (left_arr[i] < right_arr[j]) {
+            data->arr[elemStart + i + j] = left_arr[i];
+            i++;
+        } else {
+            data->arr[elemStart + i + j] = right_arr[j];
+            j++;
+        }
+    }
+    while (i < left_size) {
+        data->arr[elemStart + i + j] = left_arr[i];
+        i++;
+    }
+    while (j < right_size) {
+        data->arr[elemStart + i + j] = right_arr[j];
+        j++;
+    }
+
+    // Cleanup
+    free(root->left->data);
+    free(root->left);
+    free(root->right->data);
+    free(root->right);
+
+    free(left_arr);
+    free(right_arr);
+    return NULL;
+}
 
 void build_sort_tree(sortBranch_t* root, pthrData_t* data,
     const int layer, const int depth) {
@@ -34,8 +97,8 @@ void build_sort_tree(sortBranch_t* root, pthrData_t* data,
         return;
     }
 
-    int size = data->elem_end - data->elem_start;
-    int left_size = size / 2;
+    const int size = data->elem_end - data->elem_start;
+    const int left_size = size / 2;
     int right_size = size - left_size;
 
     pthrData_t* left_data = malloc(sizeof(pthrData_t));
@@ -62,6 +125,10 @@ void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
     }
 
     const int depth = log2(thread_cnt);
+    if (depth == 0) {
+        qsort(arr, size, sizeof(int), compare_int);
+        return;
+    }
 
     pthrData_t data;
     data.arr = arr;
@@ -75,6 +142,7 @@ void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
     // Sort
     pthread_t* main_thread = malloc(sizeof(pthread_t));
     pthread_create(main_thread, NULL,  merge_sort, &root);
+    pthread_join(*main_thread, NULL);
 
     free(main_thread);
 }
@@ -94,7 +162,7 @@ int scan_arr(int** arr_ptr) {
         (*arr_ptr)[count] = num;
         count++;
 #ifdef DEBUG
-        printf("Filling arr: count %d, capacity %d\n, elem %d", count, capacity, num);
+        printf("Filling arr: count %d, capacity %d, elem %d\n", count, capacity, num);
 #endif
     }
 
