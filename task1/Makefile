@@ -1,3 +1,6 @@
+# For CLion to configure project correctly
+all: task1
+
 main.o: main.c
 	gcc -c main.c -o main.o
 

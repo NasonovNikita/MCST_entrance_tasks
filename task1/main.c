@@ -2,22 +2,82 @@
 // Created by nosokvkokose on 10.03.26.
 //
 
+#include <math.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
 
 typedef struct {
-    int elem_to_sort_count;
-    int elem_start;  // index of first element to sort
+    int elem_end;  // exclusive
+    int elem_start;
     int* arr;
-} pthrData_t;  // sort arr[elem_start:elem_start+elem_to_sort_count]
+} pthrData_t;
+
+typedef struct sortBranch_t sortBranch_t;
+
+struct sortBranch_t {
+    pthrData_t* data;
+    sortBranch_t* left;  // NULL at bottom layer
+    sortBranch_t* right;
+};
 
 // TODO: implement
-void* thread_sort(void* data);
+void* merge_sort(void* data);
 
-// TODO: implement
-// Sorts arr using num_threads threads
-void launch_thread_sorts(int *arr, int size, int num_threads);
+void build_sort_tree(sortBranch_t* root, pthrData_t* data,
+    const int layer, const int depth) {
+    root->data = data;
+
+    if (layer == depth) {
+        root->left = NULL;
+        root->right = NULL;
+        return;
+    }
+
+    int size = data->elem_end - data->elem_start;
+    int left_size = size / 2;
+    int right_size = size - left_size;
+
+    pthrData_t* left_data = malloc(sizeof(pthrData_t));
+    left_data->arr = data->arr;
+    left_data->elem_start = data->elem_start;
+    left_data->elem_end = data->elem_start + left_size;
+
+    pthrData_t* right_data = malloc(sizeof(pthrData_t));
+    right_data->arr = data->arr;
+    right_data->elem_start = data->elem_start + left_size;
+    right_data->elem_end = data->elem_end;
+
+    // Recursively build left and right subtrees
+    root->left = malloc(sizeof(sortBranch_t));
+    root->right = malloc(sizeof(sortBranch_t));
+    build_sort_tree(root->left, left_data, layer + 1, depth);
+    build_sort_tree(root->right, right_data, layer + 1, depth);
+}
+
+// Sorts arr using thread_cnt threads
+void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
+    if (thread_cnt > 2 * size - 1) {
+        thread_cnt = 2 * size - 1;  // Ensure no empty threads
+    }
+
+    const int depth = log2(thread_cnt);
+
+    pthrData_t data;
+    data.arr = arr;
+    data.elem_start = 0;
+    data.elem_end = size;
+
+    // Merge into tree
+    sortBranch_t root;
+    build_sort_tree(&root, &data, 1, depth);
+
+    // Sort
+    pthread_t* main_thread = malloc(sizeof(pthread_t));
+    pthread_create(main_thread, NULL,  merge_sort, &root);
+
+    free(main_thread);
+}
 
 // Saves array from stdin to arr, returns size of array
 int scan_arr(int** arr_ptr) {
@@ -34,7 +94,7 @@ int scan_arr(int** arr_ptr) {
         (*arr_ptr)[count] = num;
         count++;
 #ifdef DEBUG
-        printf("Filling arr: count %d, capacity %d\n", count, capacity);
+        printf("Filling arr: count %d, capacity %d\n, elem %d", count, capacity, num);
 #endif
     }
 
@@ -79,11 +139,12 @@ int main(const int argc, char *argv[]) {
     print_arr(arr, size);
 #endif
 
-    // TODO: gen thread data
+    launch_thread_sorts(arr, size, thread_count);
 
-    // TODO: launch
-
-    // TODO: print
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
 
     free(*arr_ptr);
     free(arr_ptr);
