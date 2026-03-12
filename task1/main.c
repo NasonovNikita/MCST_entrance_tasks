@@ -9,6 +9,10 @@
 #include <string.h>
 #include "max_threads.h"
 
+#ifdef DEBUG
+int generate_thread_cnt = 0;
+#endif
+
 typedef struct {
     int elem_end;  // exclusive
     int elem_start;
@@ -50,6 +54,10 @@ void* merge_sort(void* branch) {
     pthread_create(&right_thread, NULL, merge_sort, root->right);
     pthread_join(left_thread, NULL);
     pthread_join(right_thread, NULL);
+#ifdef DEBUG
+    generate_thread_cnt += 2;
+#endif
+
 
     // Merge branches
     int* left_arr = malloc(left_size * sizeof(int));
@@ -125,7 +133,7 @@ void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
         thread_cnt = size;  // Ensure no empty threads
     }
 
-    const int depth = log2(thread_cnt);
+    const int depth = log2(thread_cnt + 1);
     if (depth == 0) {
         qsort(arr, size, sizeof(int), compare_int);
         return;
@@ -144,6 +152,10 @@ void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
     pthread_t* main_thread = malloc(sizeof(pthread_t));
     pthread_create(main_thread, NULL,  merge_sort, &root);
     pthread_join(*main_thread, NULL);
+#ifdef DEBUG
+    generate_thread_cnt += 1;
+#endif
+
 
     free(main_thread);
 }
@@ -211,13 +223,15 @@ int main(const int argc, char *argv[]) {
     int size = scan_arr(arr_ptr);
     int* arr = *arr_ptr;
 
+    launch_thread_sorts(arr, size, thread_count);
+
+
 #ifdef DEBUG
     printf("Array size: %d\n", size);
     print_arr(arr, size);
-    printf("%ld\n", MAX_THREADS);
+    printf("Max threads: %ld\n", MAX_THREADS);
+    printf("Thread count: %d\n", generate_thread_cnt);
 #endif
-
-    launch_thread_sorts(arr, size, thread_count);
 
     for (int i = 0; i < size; i++) {
         printf("%d ", arr[i]);

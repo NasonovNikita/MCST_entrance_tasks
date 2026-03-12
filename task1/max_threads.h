@@ -1,5 +1,5 @@
 //
-// Created by nosokvkokose on 12.03.26.
+// Created by nosokvkokose on 12.03.26. and kinda used AI to find the funcs
 //
 
 #ifndef MAX_THREADS_H
