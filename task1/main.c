@@ -104,6 +104,7 @@ void build_sort_tree(sortBranch_t* root, pthrData_t* data,
         return;
     }
 
+    // Split in half
     const int size = data->elem_end - data->elem_start;
     const int left_size = size / 2;
 
@@ -132,7 +133,7 @@ void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
     }
 
     const int depth = log2(thread_cnt + 1);
-    if (depth == 0) {
+    if (depth == 1) {
         qsort(arr, size, sizeof(int), compare_int);
         return;
     }

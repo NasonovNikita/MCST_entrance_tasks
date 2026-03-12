@@ -1,6 +1,6 @@
 CC = gcc
 LDFLAGS = -lm
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS += -Wall -Wextra -Werror
 TARGET = task1
 
 # For CLion to configure project correctly
