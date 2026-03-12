@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include "max_threads.h"
 
 typedef struct {
     int elem_end;  // exclusive
@@ -99,7 +100,6 @@ void build_sort_tree(sortBranch_t* root, pthrData_t* data,
 
     const int size = data->elem_end - data->elem_start;
     const int left_size = size / 2;
-    int right_size = size - left_size;
 
     pthrData_t* left_data = malloc(sizeof(pthrData_t));
     left_data->arr = data->arr;
@@ -120,8 +120,9 @@ void build_sort_tree(sortBranch_t* root, pthrData_t* data,
 
 // Sorts arr using thread_cnt threads
 void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
-    if (thread_cnt > 2 * size - 1) {
-        thread_cnt = 2 * size - 1;  // Ensure no empty threads
+    if (thread_cnt > size) {
+        fprintf(stderr, "Warning: thread_cnt > size, setting thread_cnt = %d\n", size);
+        thread_cnt = size;  // Ensure no empty threads
     }
 
     const int depth = log2(thread_cnt);
@@ -188,7 +189,7 @@ void print_arr(int* arr, int size) {
 
 int main(const int argc, char *argv[]) {
     if (argc == 1) {
-        fprintf(stderr, "Number of threads required, example: ./task1 10\n");
+        fprintf(stderr, "Error: Number of threads required, example: ./task1 10\n");
         return 1;
     }
     if (argc > 2) {
@@ -198,8 +199,12 @@ int main(const int argc, char *argv[]) {
 
     const int thread_count = atoi(argv[1]);
     if (thread_count <= 0) {
-        fprintf(stderr, "Number of threads must be a positive integer\n");
+        fprintf(stderr, "Error: Number of threads must be a positive integer\n");
         return 1;
+    }
+    if (thread_count > MAX_THREADS) {
+       fprintf(stderr, "Warning: Number of threads must be less than %ld, capping at %ld\n",
+        MAX_THREADS, MAX_THREADS);
     }
 
     int** arr_ptr = malloc(sizeof(int*));
@@ -209,6 +214,7 @@ int main(const int argc, char *argv[]) {
 #ifdef DEBUG
     printf("Array size: %d\n", size);
     print_arr(arr, size);
+    printf("%ld\n", MAX_THREADS);
 #endif
 
     launch_thread_sorts(arr, size, thread_count);
