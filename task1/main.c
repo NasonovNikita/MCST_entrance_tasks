@@ -9,9 +9,7 @@
 #include <string.h>
 #include "max_threads.h"
 
-#ifdef DEBUG
 int generate_thread_cnt = 0;
-#endif
 
 typedef struct {
     int elem_end;  // exclusive
@@ -152,9 +150,7 @@ void launch_thread_sorts(int *arr, const int size, int thread_cnt) {
     pthread_t* main_thread = malloc(sizeof(pthread_t));
     pthread_create(main_thread, NULL,  merge_sort, &root);
     pthread_join(*main_thread, NULL);
-#ifdef DEBUG
     generate_thread_cnt += 1;
-#endif
 
 
     free(main_thread);
