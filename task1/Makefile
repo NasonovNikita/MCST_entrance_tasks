@@ -1,21 +1,26 @@
 CC = gcc
 LDFLAGS = -lm
 CFLAGS = -Wall -Wextra -Werror
+TARGET = task1
 
 # For CLion to configure project correctly
 all: task1
 
 debug: CFLAGS += -DDEBUG -g
-debug: clean main.o
-	$(CC) $(CFLAGS) main.o -o task1 $(LDFLAGS)
+debug: clean $(TARGET)
 
-main.o: main.c max_threads.h
+%.o: %.c max_threads.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-task1: main.o
-	$(CC) $(CFLAGS) main.o -o task1 $(LDFLAGS)
+
+$(TARGET): main.o
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -MMD -c $< -o $@
+-include *.d
 
 clean:
-	rm -f *.o task1
+	rm -f *.o $(TARGET)
 
 .PHONY: all debug clean
