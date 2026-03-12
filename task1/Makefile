@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -Werror
 TARGET = task1
 
 # For CLion to configure project correctly
-all: task1
+all: $(TARGET)
 
 debug: CFLAGS += -DDEBUG -g
 debug: clean $(TARGET)
