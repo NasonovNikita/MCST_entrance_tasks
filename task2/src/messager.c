@@ -4,6 +4,7 @@
 
 #include "messager.h"
 
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,11 +48,19 @@ int init_messager(messager_t* messager, char* fifo_path) {
     messager->fifo_path = fifo_path;
 
     // Try write
-    int fd = open_fifo_write(&fifo, fifo_path);
     messager->mode = WRITE;
-    if (fd == -1) {
+    int fd = open_fifo_write(&fifo, fifo_path);
+    if (fd != -1) {
+        messager->fifo = fifo;
 #ifdef DEBUG
-        printf("Can't open in WRITE mode, trying READ mode\n");
+        printf("Messager initialized in WRITER mode\n");
+#endif
+        return fd;
+    }
+
+    if (errno == ENXIO) {
+#ifdef DEBUG
+        printf("No reader, attempting to become reader\n");
 #endif
         // Try read instead
         fd = open_fifo_read(&fifo, fifo_path);
@@ -60,14 +69,14 @@ int init_messager(messager_t* messager, char* fifo_path) {
             perror("Fifo doesn't exist or has both reader and writer\n");
             return -1;
         }
-    }
-    messager->fifo = fifo;
-
+        messager->fifo = fifo;
 #ifdef DEBUG
-    printf("Messager initialized in %s mode\n", messager->mode == READ ? "READ" : "WRITE");
+        printf("Messager initialized in READER mode\n");
 #endif
+        return fd;
+    }
 
-    return 0;
+    return -1;
 }
 
 void handle_messager(messager_t *messager) {

@@ -4,7 +4,10 @@
 
 #include "my_fifo.h"
 
+#include <errno.h>
 #include <fcntl.h>
+#include <sys/file.h>
+#include <asm-generic/errno-base.h>
 
 int open_fifo_read(fifo_handler_t *fifo, char *path) {
     const int fd = open(path, O_RDONLY);
@@ -21,6 +24,14 @@ int open_fifo_write(fifo_handler_t *fifo, char *path) {
     if (fd == -1) {
         return -1;
     }
+
+    if (flock(fd, LOCK_EX | LOCK_NB) == -1) {
+        // Prevent second writer
+        close(fd);
+        errno = EAGAIN;
+        return -1;
+    }
+
     fifo->fd = fd;
     fifo->mode = O_WRONLY;
     return fd;

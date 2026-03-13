@@ -27,7 +27,7 @@ int main(const int argc, char* argv[]) {
     printf("FIFO path: %s\n", path);
 #endif
 
-    if (init_messager(&messager, path) != 0) {
+    if (init_messager(&messager, path) == -1) {
         fprintf(stderr, "Failed to init messager\n");
         return 1;
     }
