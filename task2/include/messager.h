@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifndef MASSAGER_H
-#define MASSAGER_H
+#ifndef MESSAGER_H
+#define MESSAGER_H
 
 #include "my_fifo.h"
 
@@ -20,9 +20,7 @@ typedef struct {
     fifo_handler_t fifo;
 } massager_t;
 
-// Use to change role
-void switch_mode(massager_t* massager);
 int init_massager(massager_t* massager, char* fifo_path);
 void handle_massager(massager_t* massager);
 
-#endif //MASSAGER_H
+#endif //MESSAGER_H
