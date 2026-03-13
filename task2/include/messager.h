@@ -9,18 +9,20 @@
 
 #include "my_fifo.h"
 
-enum massager_mode {
+enum messager_mode {
     READ,
     WRITE
 };
 
 typedef struct {
-    enum massager_mode mode;
+    enum messager_mode mode;
     char* fifo_path;
     fifo_handler_t fifo;
-} massager_t;
+} messager_t;
 
-int init_massager(massager_t* massager, char* fifo_path);
-void handle_massager(massager_t* massager);
+int init_messager(messager_t* messager, char* fifo_path);
+void handle_messager(messager_t* messager);
+
+void cleanup_messager(messager_t* messager);
 
 #endif //MESSAGER_H

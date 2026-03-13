@@ -40,6 +40,6 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 run: $(TARGET)
-	./$(TARGET)
+	$(TARGET)
 
 .PHONY: all debug clean run

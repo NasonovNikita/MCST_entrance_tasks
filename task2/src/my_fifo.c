@@ -17,7 +17,7 @@ int open_fifo_read(fifo_handler_t *fifo, char *path) {
 }
 
 int open_fifo_write(fifo_handler_t *fifo, char *path) {
-    const int fd = open(path, O_WRONLY);
+    const int fd = open(path, O_WRONLY | O_NONBLOCK);
     if (fd == -1) {
         return -1;
     }
@@ -26,21 +26,21 @@ int open_fifo_write(fifo_handler_t *fifo, char *path) {
     return fd;
 }
 
-ssize_t read_from_fifo(fifo_handler_t fifo, char *buffer, size_t size) {
-    if (fifo.mode != O_RDONLY) {
+ssize_t read_from_fifo(fifo_handler_t *fifo, char *buffer, size_t size) {
+    if (fifo->mode != O_RDONLY) {
         return -1;
     }
-    return read(fifo.fd, buffer, size);
+    return read(fifo->fd, buffer, size);
 }
 
-ssize_t write_to_fifo(fifo_handler_t fifo, const char *message, size_t size) {
-    if (fifo.mode != O_WRONLY) {
+ssize_t write_to_fifo(fifo_handler_t *fifo, const char *message, size_t size) {
+    if (fifo->mode != O_WRONLY) {
         return -1;
     }
-    return write(fifo.fd, message, size);
+    return write(fifo->fd, message, size);
 }
 
-void free_fifo(fifo_handler_t fifo) {
-    close(fifo.fd);
-    fifo.mode = -1;
+void free_fifo(fifo_handler_t *fifo) {
+    close(fifo->fd);
+    fifo->mode = -1;
 }
