@@ -220,12 +220,15 @@ int main(const int argc, char *argv[]) {
     int size = scan_arr(arr_ptr);
     int* arr = *arr_ptr;
 
+#ifdef DEBUG
+    printf("Array size: %d\n", size);
+    print_arr(arr, size);
+#endif
+
     launch_thread_sorts(arr, size, thread_count);
 
 
 #ifdef DEBUG
-    printf("Array size: %d\n", size);
-    print_arr(arr, size);
     printf("Max threads: %ld\n", MAX_THREADS);
     printf("Thread count: %d\n", generate_thread_cnt);
 #endif
