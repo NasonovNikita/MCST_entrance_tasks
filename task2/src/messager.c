@@ -110,5 +110,8 @@ void handle_messager(messager_t *messager) {
 }
 
 void cleanup_messager(messager_t *messager) {
+#ifdef DEBUG
+    printf("Cleaning up messager\n");
+#endif
     free_fifo(&messager->fifo);
 }
