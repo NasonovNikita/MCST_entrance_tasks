@@ -15,6 +15,23 @@ echo 3 7 12 95 2 51 12 412 124 | ./task1 6  # 6 threads (at maximum< less can be
 
 Known issue: doesn't work
 
+## Task 3
+
+Sort input file and save result in output file. 
+
+```
+# cat in.txt
+>3
+>
+>2
+>a
+# ./task3 in.txt out.txt plain
+# cat out.txt
+>2
+>3
+>a
+```
+
 ## Build
 
 Appropriate ways to build regularly:
