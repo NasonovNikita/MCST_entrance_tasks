@@ -11,7 +11,11 @@ echo 3 7 12 95 2 51 12 412 124 | ./task1 6  # 6 threads (at maximum< less can be
 >2 3 7 12 12 51 95 124 412
 ```
 
-### Build
+## Task 2
+
+Known issue: doesn't work
+
+## Build
 
 Appropriate ways to build regularly:
 `>make`
