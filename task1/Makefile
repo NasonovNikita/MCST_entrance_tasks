@@ -1,26 +1,45 @@
 CC = gcc
 LDFLAGS = -lm
-CFLAGS += -Wall -Wextra -Werror
-TARGET = task1
+CFLAGS ?= -Wall -Wextra -Werror
+DEPFLAGS = -MMD
+
+SRC_DIR = ./src
+INC_DIR = ./include
+BUILD_DIR = ./build
+OBJ_DIR = ${BUILD_DIR}/obj
+BIN_DIR = ${BUILD_DIR}/bin
+
+TARGET = $(BIN_DIR)/task2
+
+SRCS = $(shell find $(SRC_DIR) -name "*.c")
+OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
+DEPS = $(OBJS:.o=.d)
+
+CFLAGS += -I$(INC_DIR)
 
 # For CLion to configure project correctly
 all: $(TARGET)
 
+$(OBJ_DIR) $(BIN_DIR):
+	mkdir -p $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
+
+$(TARGET): $(OBJS) | $(BIN_DIR)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+
+
 debug: CFLAGS += -DDEBUG -g
 debug: clean $(TARGET)
 
-%.o: %.c max_threads.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-
-$(TARGET): main.o
-	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
-
-%.o: %.c
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
--include *.d
+-include $(DEPS)
 
 clean:
-	rm -f *.o $(TARGET)
+	rm -rf $(BUILD_DIR)
 
-.PHONY: all debug clean
+run: $(TARGET)
+	$(TARGET)
+
+.PHONY: all debug clean run
