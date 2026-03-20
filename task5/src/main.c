@@ -2,7 +2,10 @@
 // Created by nosokvkokose on 20.03.26.
 //
 
+#ifndef DONT_USE_GNU_ERROR_HANDLING
 #define _GNU_SOURCE  // To get same output as in task example
+#endif
+
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +16,11 @@ int main() {
     if (file == NULL) {
         perror("Can't open file");
 
+#ifndef DONT_USE_GNU_ERROR_HANDLING
         fprintf(stderr, "Errno = %s\n", strerrorname_np(errno));
+#else
+        fprintf(stderr, "Errno = %d\n", errno);
+#endif
 
         // This error catching method is not supported
         // extern int sys_nerr;
