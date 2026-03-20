@@ -62,7 +62,9 @@ Errno = ENOENT
 ```
 
 > [!WARNING]
-> Uses _GNU_SOURCE, requires gcc/CLang at glibc > 2.32
+> Uses _GNU_SOURCE, requires gcc/CLang at glibc > 2.32.
+> 
+> Otherwise use `CFLAGS+=-DDONT_USE_GNU_ERROR_HANDLING`
 
 ## Build
 
