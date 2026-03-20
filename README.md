@@ -51,6 +51,19 @@ Current list of parsed arguments can be found in main.c
 >Incorrect option: 'x'
 ```
 
+## Task 5
+
+Intentionally causes error and prints the error
+
+```
+build/bin/task5
+Can't open file: No such file or directory
+Errno = ENOENT
+```
+
+> [!WARNING]
+> Uses _GNU_SOURCE, requires gcc/CLang at glibc > 2.32
+
 ## Build
 
 Appropriate ways to build regularly:
