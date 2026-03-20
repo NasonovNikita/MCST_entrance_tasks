@@ -7,8 +7,6 @@
 
 #define MAX_LONG_OPTION_LEN 16
 
-constexpr char SHORT_OPTIONS[] = ":mcst";
-
 typedef struct {
     char token[MAX_LONG_OPTION_LEN];
     char* value;

@@ -9,6 +9,9 @@
 #include <string.h>
 #include "arg_list.h"
 
+
+constexpr char SHORT_OPTIONS[] = ":mcst";
+
 static struct option long_options[] = {
     {"elbrus", required_argument, 0, 'e'},
     {0, 0, 0, 0}  // Conventional end
