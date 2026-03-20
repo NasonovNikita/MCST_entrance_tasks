@@ -32,6 +32,25 @@ Sort input file and save result in output file.
 >a
 ```
 
+## Task 4
+
+Parse console arguments and print short, long options and other arguments.
+
+> [!IMPORTANT]
+> Conventionally short options don't have arguments and long options do
+
+Current list of parsed arguments can be found in main.c
+
+#### Examples:
+```
+# task4 -tm -s --elbrus=16c file0 --elbrus=2c3 file1
+>Short options: 't' 'm' 's'
+>Long options: 'elbrus=16c' 'elbrus=2c3'
+>Non options: 'file0' 'file1'
+# task4 -tm -x --elbrus=8c
+>Incorrect option: 'x'
+```
+
 ## Build
 
 Appropriate ways to build regularly:
