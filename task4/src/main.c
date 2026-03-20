@@ -7,33 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAX_LONG_OPTION_LEN 16
-
-constexpr char SHORT_OPTIONS[] = ":mcst";
-
-typedef struct {
-    char token[MAX_LONG_OPTION_LEN];
-    char* value;
-} ArgParam;
-
-typedef struct {
-    ArgParam* items;
-    int size;
-    int capacity;
-} ArgList;
-
-void add_arg(ArgList* list, ArgParam* arg) {
-    if (list->size == list->capacity) {
-        list->capacity = (list->capacity == 0) ? 1 : list->capacity * 2;
-        list->items = realloc(list->items, list->capacity * sizeof(ArgParam));
-    }
-    list->items[list->size++] = *arg;
-}
-
-void free_arg_list(ArgList* list) {
-    free(list->items);
-}
+#include "arg_list.h"
 
 static struct option long_options[] = {
     {"elbrus", required_argument, 0, 'e'},
@@ -52,57 +26,45 @@ bool is_elbrus_arg(const char* arg) {
     return false;
 }
 
-int main(const int argc, char *argv[]) {
-    int c;
-    ArgList short_options_list = {NULL, 0, 0};
-    ArgList long_options_list = {NULL, 0, 0};
-    ArgList non_options_list = {NULL, 0, 0};
+static ArgList short_options_list = {NULL, 0, 0};
+static ArgList long_options_list = {NULL, 0, 0};
+static ArgList non_options_list = {NULL, 0, 0};
 
-    opterr = 0;  // Ensure we print own errors
-    while ((c = getopt_long(argc, argv, SHORT_OPTIONS, long_options, NULL)) != -1) {
-        switch (c) {
-            case 'e': {
-                if (!is_elbrus_arg(optarg)) {
-                    fprintf(stderr, "Incorrect argument for option: '%s'\n", optarg);
-                    return 1;
-                }
-
-                ArgParam arg;
-                strncpy(arg.token, "elbrus", MAX_LONG_OPTION_LEN - 1);
-                arg.value = optarg;
-                add_arg(&long_options_list, &arg);
-                break;
+void parse_arg(const int c, char* argv[]) {
+    switch (c) {
+        case 'e': {
+            if (!is_elbrus_arg(optarg)) {
+                fprintf(stderr, "Incorrect argument for option: '%s'\n", optarg);
+                exit(1);
             }
-            case '?':
-                if (optopt) {  // Short option
-                    fprintf(stderr, "Incorrect option: '%c'\n", optopt);
-                } else {  // Long option
-                    fprintf(stderr, "Incorrect option: '%s'\n", argv[optind - 1]);
-                }
-                return 1;
-            case ':':
-                fprintf(stderr, "Missing argument for option: '%s'\n", argv[optind - 1]);
-                return 1;
-                break;
-            default:  // Regular short options
-                ArgParam arg;
-                arg.token[0] = c;
-                arg.token[1] = '\0';
-                arg.value = NULL;
-                add_arg(&short_options_list, &arg);
-                break;
+
+            ArgParam arg = {0};
+            strncpy(arg.token, "elbrus", MAX_LONG_OPTION_LEN - 1);
+            arg.value = optarg;
+            add_arg(&long_options_list, &arg);
+            break;
         }
-    }  // Parse options
-
-    // Parse non-options
-    while (optind < argc) {
-        ArgParam arg;
-        arg.value = argv[optind++];
-        add_arg(&non_options_list, &arg);
+        case '?':
+            if (optopt) {  // Short option
+                fprintf(stderr, "Incorrect option: '%c'\n", optopt);
+            } else {  // Long option
+                fprintf(stderr, "Incorrect option: '%s'\n", argv[optind - 1]);
+            }
+            exit(1);
+        case ':':
+            fprintf(stderr, "Missing argument for option: '%s'\n", argv[optind - 1]);
+            exit(1);
+        default:  // Regular short options
+            ArgParam arg = {0};
+            arg.token[0] = c;
+            arg.token[1] = '\0';
+            arg.value = NULL;
+            add_arg(&short_options_list, &arg);
+            break;
     }
+}
 
-    // Prints
-
+void print_options() {
     printf("Short options: ");
     for (int i = 0; i < short_options_list.size; i++) {
         printf("'%s' ", short_options_list.items[i].token);
@@ -120,6 +82,25 @@ int main(const int argc, char *argv[]) {
         printf("'%s' ", non_options_list.items[i].value);
     }
     printf("\n");
+}
+
+int main(const int argc, char *argv[]) {
+    int c;
+
+    opterr = 0;  // Ensure we print own errors
+    while ((c = getopt_long(argc, argv, SHORT_OPTIONS, long_options, NULL)) != -1) {
+        parse_arg(c, argv);
+    }  // Parse options
+
+    // Parse non-options
+    while (optind < argc) {
+        ArgParam arg = {0};
+        arg.value = argv[optind++];
+        add_arg(&non_options_list, &arg);
+    }
+
+    // Prints
+    print_options();
 
     // Free memory
 
