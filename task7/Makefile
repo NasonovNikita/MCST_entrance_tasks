@@ -9,7 +9,7 @@ BUILD_DIR = ./build
 OBJ_DIR = ${BUILD_DIR}/obj
 BIN_DIR = ${BUILD_DIR}/bin
 
-TARGET = $(BIN_DIR)/task6
+TARGET = $(BIN_DIR)/task7
 
 SRCS = $(shell find $(SRC_DIR) -name "*.c")
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
