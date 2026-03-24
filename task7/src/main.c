@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #define PARENT_COPY_FILE_NAME "parent_copy"
 #define CHILD_COPY_FILE_NAME "child_copy"
@@ -55,15 +56,18 @@ int main(const int argc, char* argv[]) {\
 
     if (pid == 0) {  // Child process
         output_file = open_file(CHILD_COPY_FILE_NAME, "w");
-        // Print Parent: [contents]
         printf("Child: \n");
+
+        copy_file(input_file, stdout);
+        printf("\n");
     } else {  // Parent process
         output_file = open_file(PARENT_COPY_FILE_NAME, "w");
         printf("Parent: \n");
+
+        copy_file(input_file, stdout);
+        printf("\n");
     }
     copy_file(input_file, output_file);
-    copy_file(input_file, stdout);
-    printf("\n");  // Add newline after printing contents
 
     fclose(input_file);
     fclose(output_file);
