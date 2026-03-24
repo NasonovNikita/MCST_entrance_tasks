@@ -58,7 +58,8 @@ int main(const int argc, char* argv[]) {
         printf("Other type of file:");
     }
     printf("%s\n", file_path);
-    printf("Mode: %s\n", get_permissions(file_stat.st_mode));
+    char* permissions = get_permissions(file_stat.st_mode);
+    printf("Mode: %s\n", permissions);
     printf("Size: %ld bytes\n", file_stat.st_size);
     printf("UID: %d\n", file_stat.st_uid);
     printf("Blocks: %ld\n", file_stat.st_blocks);
@@ -67,5 +68,6 @@ int main(const int argc, char* argv[]) {
     printf("Last access: %s", ctime(&file_stat.st_atime));
 
 
+    free(permissions);
     return 0;
 }
