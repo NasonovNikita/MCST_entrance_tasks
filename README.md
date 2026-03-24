@@ -79,7 +79,22 @@ Blocks: 8
 Block size: 4096
 Last change: Fri Mar dd hh:mm:ss 2026
 Last access: Fri Mar dd hh:mm:ss 2026
+```
 
+## Task 7
+
+Copies given file to "parent_copy" and "child_copy" created in fork. Also prints the result of copying.
+
+```
+# cat test_file
+qwerty_mega resg43qt 3qt4 4f2q34 f
+# ./task6 test_file
+Parent: 
+qwerty_mega resg43qt 3qt4 4f2q34 f
+Child: 
+qwerty_mega resg43qt 3qt4 4f2q34 f
+# ls
+child_copy  parent_copy  task6  test_file
 ```
 
 ## Build
