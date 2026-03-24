@@ -66,6 +66,22 @@ Errno = ENOENT
 > 
 > Otherwise use `CFLAGS+=-DDONT_USE_GNU_ERROR_HANDLING`
 
+## Task 6
+
+Prints stats of a given file/directory.
+
+```
+File: /***/******/******/README.md
+Mode: -rw-r--r--
+Size: 1319 bytes
+UID: 1000
+Blocks: 8
+Block size: 4096
+Last change: Fri Mar dd hh:mm:ss 2026
+Last access: Fri Mar dd hh:mm:ss 2026
+
+```
+
 ## Build
 
 Appropriate ways to build regularly:
