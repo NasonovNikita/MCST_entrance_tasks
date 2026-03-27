@@ -1,6 +1,6 @@
-CC = gcc
+CXX = g++
 LDFLAGS = -lm
-CFLAGS ?= -Wall -Wextra -Werror
+CXXFLAGS ?= -Wall -Wextra -Werror
 DEPFLAGS = -MMD
 
 SRC_DIR = ./src
@@ -11,11 +11,11 @@ BIN_DIR = ${BUILD_DIR}/bin
 
 TARGET = $(BIN_DIR)/task8
 
-SRCS = $(shell find $(SRC_DIR) -name "*.c")
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
+SRCS = $(shell find $(SRC_DIR) -name "*.cpp")
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS = $(OBJS:.o=.d)
 
-CFLAGS += -I$(INC_DIR)
+CXXFLAGS += -I$(INC_DIR)
 
 # For CLion to configure project correctly
 all: $(TARGET)
@@ -23,15 +23,15 @@ all: $(TARGET)
 $(OBJ_DIR) $(BIN_DIR):
 	mkdir -p $@
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJS) | $(BIN_DIR)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 
-debug: CFLAGS += -DDEBUG -g
+debug: CXXFLAGS += -DDEBUG -g
 debug: clean $(TARGET)
 
 -include $(DEPS)

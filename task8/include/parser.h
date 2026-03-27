@@ -5,29 +5,37 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#define VARIABLES_COUNT 26
+#include <cstddef>
+#include <string>
+#include <memory>
 
-typedef enum {
+constexpr size_t VARIABLES_COUNT = 26;
+
+enum class NodeType {
     AND,
     OR,
     NOT,
     VAL
-} node_type;
+};
 
-typedef struct node_t node_t;
 
-struct node_t {
-    node_t *left;
-    node_t *right;
-    node_type type;
-    char* val;
+struct Node {
+    using Ptr = std::unique_ptr<Node>;
+
+    Ptr left = nullptr;
+    Ptr right = nullptr;
+    NodeType type;
+    char val;
+
+    explicit Node(const char value) : type(NodeType::VAL), val(value) {}
+
+    Node(const NodeType type, Ptr left, Ptr right)
+        : left(std::move(left)), right(std::move(right)), type(type), val('\0') {}
 };
 
 // Parses a logical expression with AND, OR, NOT, brackets, and variables A-Z
-node_t parse(const char* expression);
+Node::Ptr parse(const std::string& expression);
 
-bool evaluate(node_t *tree, bool values[static VARIABLES_COUNT]);
-
-void free_tree(node_t *tree);
+bool evaluate(const Node& tree, const std::array<bool, VARIABLES_COUNT>& values);
 
 #endif //PARSER_H
