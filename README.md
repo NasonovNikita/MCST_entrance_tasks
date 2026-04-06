@@ -97,6 +97,20 @@ qwerty_mega resg43qt 3qt4 4f2q34 f
 child_copy  parent_copy  task6  test_file
 ```
 
+## Task 9
+
+Finds longest rising sequence in given array (ending with new line or EOF).
+
+```
+# ./task9
+<1 2 3 0 4 5 6 0
+>0 4 5 6
+
+# ./task9
+<1 2 3 4 0 4 5 6 8
+>0 4 5 6 8
+```
+
 ## Build
 
 Appropriate ways to build regularly:
