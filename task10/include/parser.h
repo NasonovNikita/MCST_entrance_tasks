@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <string>
+#include <map>
 #include <memory>
 
 constexpr size_t VARIABLES_COUNT = 26;
@@ -17,7 +18,6 @@ enum class NodeType {
     NOT,
     VAL
 };
-
 
 struct Node {
     using Ptr = std::unique_ptr<Node>;
@@ -34,8 +34,8 @@ struct Node {
 };
 
 // Parses a logical expression with AND, OR, NOT, brackets, and variables A-Z
-Node::Ptr parse(const std::string& expression);
+Node::Ptr parse(std::string expression);
 
-bool evaluate(const Node& tree, const std::array<bool, VARIABLES_COUNT>& values);
+bool evaluate(const Node& tree, const std::map<char, bool>& values);
 
 #endif //PARSER_H
