@@ -97,6 +97,30 @@ qwerty_mega resg43qt 3qt4 4f2q34 f
 child_copy  parent_copy  task6  test_file
 ```
 
+## Task 8
+
+Multiplies matrices 100x100 with additional 0.5 sec delay between iterations. On first SIGINT (ctrl+C) writes current position, on second terminates program.
+
+```
+# task8 --signal  (or -- sigaction)
+^C
+3 83
+83 1
+3 1
+^C
+>        # Program ended
+```
+
+> [!IMPORTANT]
+> Indexes output contains new line as first symbol, as many systems don't go to new line after special inputs.
+> It is made for inputs not to be like this:
+> ```
+> ^C3 83  # blending
+> 83 1
+> 3 1
+> ^C
+> ```
+
 ## Task 9
 
 Finds longest rising sequence in given array (ending with new line or EOF).
