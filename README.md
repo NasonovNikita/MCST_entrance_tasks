@@ -135,6 +135,33 @@ Finds longest rising sequence in given array (ending with new line or EOF).
 >0 4 5 6 8
 ```
 
+## Task 10
+
+Evaluates logical expression, given in standard input. Valid tokens: AND, OR, NOT, brackets and single-character variables.
+Prints logical table as a result
+
+```
+# ./build/bin/task10
+<A AND B
+A B Result
+0 0 0
+0 1 0
+1 0 0
+1 1 1
+
+# ./build/bin/task10
+<A OR B AND NOT C
+A B C Result
+0 0 0 0
+0 0 1 0
+0 1 0 1
+0 1 1 0
+1 0 0 1
+1 0 1 1
+1 1 0 1
+1 1 1 1
+```
+
 ## Build
 
 Appropriate ways to build regularly:
