@@ -3,9 +3,16 @@
 //
 
 #include "parser.h"
+#include <iostream>
 
-int main(const int argc, char* argv[]) {
-    
+
+int main() {
+    std::string expr;
+    std::cin >> expr;
+
+    const evaluate_t evaluate = parse(expr);
+
+    printf("%d\n", evaluate({{'A', true}, {'B', false}}));
 
     return 0;
 }
